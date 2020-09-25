@@ -4,19 +4,20 @@
 
 // GraphEdgeWeights -> Array storing the weights of edges in the graph.
 int GraphEdgeWeights[MAX][MAX];
+
 // nVertices -> No: of vertices in the graph.
 int nVertices;
  
 // Edge -> Structure for an edge with its source vertex, destination vertex and its weight.
 typedef struct Edge{
     int src, dest, weight;
-}Edge;
+} Edge;
 
 // EdgeList -> Structure for storing an array of Edge along with its size.
 typedef struct EdgeList{
     Edge data[MAX];
     int size;
-}EdgeList;
+} EdgeList;
 
 EdgeList edgeList;
 EdgeList spanList;
@@ -47,15 +48,14 @@ int FindParent(int parent[], int vertexNo){
 }
 
 // Function name : Union
-// Input         : parent array, vertexNo
-// Output        : parent
-// Logic         : For finding the parent of a node in the spanning tree.
-void Union(int parent[], int vertexOne, int vertexTwo){
+// Input         : parent array, source node, destination node
+// Output        : void
+// Logic         : For adding the both nodes to the same parent.
+void Union(int parent[], int srcNode, int destNode){
     int i;
-    
     for(i=0; i<nVertices; i++)
-        if(parent[i] == vertexTwo)
-            parent[i] = vertexOne;
+        if(parent[i] == destNode)
+            parent[i] = srcNode;
 }
 
 // Function name : KruskalPathFinder
@@ -63,35 +63,42 @@ void Union(int parent[], int vertexOne, int vertexTwo){
 // Output        : void
 // Logic         : For generating a minimum spanning tree.
 void KruskalPathFinder(){
-    int parent[MAX], i, j, xRoot, yRoot;
 
+    // Initialising the variables.
+    int parent[MAX], i, j, srcRoot, destRoot;
+    
+    // Initialising the edgeList.
     edgeList.size = 0;
-    spanList.size = 0;
- 
     for(i=1; i<nVertices; i++){
         for(j=0; j<i; j++){
             if(GraphEdgeWeights[i][j] != 0){
-                edgeList.data[edgeList.size].src = i;
-                edgeList.data[edgeList.size].dest = j;
-                edgeList.data[edgeList.size].weight = GraphEdgeWeights[i][j];
+                edgeList.data[edgeList.size].src     = i;
+                edgeList.data[edgeList.size].dest    = j;
+                edgeList.data[edgeList.size].weight  = GraphEdgeWeights[i][j];
                 edgeList.size++;
             }
         }
     }
- 
+
+    // Sorting the edges based on their weights.
     SortEdges();
     
+    // Assigning parents to every node of the tree.
     for(i=0; i<nVertices; i++)
         parent[i] = i;
     
+    // Creating the Minimum Spanning Tree.
+    spanList.size = 0;
     for(i=0;i<edgeList.size;i++){
-        xRoot = FindParent(parent, edgeList.data[i].src);
-        yRoot = FindParent(parent, edgeList.data[i].dest);
+        // Find Operation
+        srcRoot = FindParent(parent, edgeList.data[i].src);
+        destRoot = FindParent(parent, edgeList.data[i].dest);
         
-        if(xRoot != yRoot){
+        if(srcRoot != destRoot){
             spanList.data[spanList.size] = edgeList.data[i];
             spanList.size++;
-            Union(parent, xRoot, yRoot);
+            // Union Operation
+            Union(parent, srcRoot, destRoot);
         }
     }
 }
@@ -110,8 +117,8 @@ void PrintResult(){
             spanList.data[i].weight);
         cost = cost + spanList.data[i].weight;
     }
- 
-    printf("\n\nCost of the spanning tree = %d", cost);
+    printf("\n=====================================\n")
+    printf("Cost of the laying the cable = %d", cost);
 }
 
 // Function name : main
@@ -121,15 +128,14 @@ void PrintResult(){
 void main(){
     int i, j, total_cost, weight;
     
-    printf("\nEnter number of vertices : ");
+    printf("\nNumber of cities : ");
     scanf("%d",&nVertices);
-    printf("\nEnter the adjacency matrix :\n");
     
     for(i=0; i<nVertices; i++){
         for(j=0; j<nVertices; j++){
             if(i!=j){
                 if(i<j){
-                    printf("Enter the weight for edge %d %d : ", i, j);
+                    printf("Cost for laying the cable from city %d to city %d : ", i, j);
                     scanf("%d", &weight);
                     GraphEdgeWeights[i][j] = weight;
                 }
