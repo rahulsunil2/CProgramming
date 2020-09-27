@@ -1,3 +1,6 @@
+// Group 2 - Adhithyan, Devika, Rahul
+// Kruskal's Algorithm
+
 #include<stdio.h>
  
 #define MAX 30
@@ -39,23 +42,23 @@ void SortEdges(){
             }
 }
 
-// Function name : FindParent
-// Input         : parent array, vertexNo
-// Output        : parent
-// Logic         : For finding the parent of a node in the spanning tree.
-int FindParent(int parent[], int vertexNo){
-    return(parent[vertexNo]);
+// Function name : FindVertexSet
+// Input         : vertexSet array, vertexNo
+// Output        : vertexSet
+// Logic         : For finding the vertexSet of a node in the spanning tree.
+int FindVertexSet(int vertexSet[], int vertexNo){
+    return(vertexSet[vertexNo]);
 }
 
 // Function name : Union
-// Input         : parent array, source node, destination node
+// Input         : vertexSet array, source node, destination node
 // Output        : void
-// Logic         : For adding the both nodes to the same parent.
-void Union(int parent[], int srcNode, int destNode){
+// Logic         : For adding the both nodes to the same vertexSet.
+void Union(int vertexSet[], int srcNode, int destNode){
     int i;
     for(i=0; i<nVertices; i++)
-        if(parent[i] == destNode)
-            parent[i] = srcNode;
+        if(vertexSet[i] == destNode)
+            vertexSet[i] = srcNode;
 }
 
 // Function name : KruskalPathFinder
@@ -65,9 +68,9 @@ void Union(int parent[], int srcNode, int destNode){
 void KruskalPathFinder(){
 
     // Initialising the variables.
-    int parent[MAX], i, j, srcRoot, destRoot;
+    int vertexSet[MAX], i, j, srcNode, destNode;
     
-    // Initialising the edgeList.
+    // Initialising the edgeList based on user input.
     edgeList.size = 0;
     for(i=1; i<nVertices; i++){
         for(j=0; j<i; j++){
@@ -85,20 +88,20 @@ void KruskalPathFinder(){
     
     // Assigning parents to every node of the tree.
     for(i=0; i<nVertices; i++)
-        parent[i] = i;
+        vertexSet[i] = i;
     
     // Creating the Minimum Spanning Tree.
     spanList.size = 0;
-    for(i=0;i<edgeList.size;i++){
+    for(i=0; i<edgeList.size; i++){
         // Find Operation
-        srcRoot = FindParent(parent, edgeList.data[i].src);
-        destRoot = FindParent(parent, edgeList.data[i].dest);
+        srcNode = FindVertexSet(vertexSet, edgeList.data[i].src);
+        destNode = FindVertexSet(vertexSet, edgeList.data[i].dest);
         
-        if(srcRoot != destRoot){
+        if(srcNode != destNode){
             spanList.data[spanList.size] = edgeList.data[i];
             spanList.size++;
             // Union Operation
-            Union(parent, srcRoot, destRoot);
+            Union(vertexSet, srcNode, destNode);
         }
     }
 }
@@ -117,7 +120,7 @@ void PrintResult(){
             spanList.data[i].weight);
         cost = cost + spanList.data[i].weight;
     }
-    printf("\n=====================================\n")
+    printf("\n=====================================\n");
     printf("Cost of the laying the cable = %d", cost);
 }
 
