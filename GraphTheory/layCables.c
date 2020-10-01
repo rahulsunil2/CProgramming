@@ -1,4 +1,3 @@
-// Group 2 - Adhithyan, Devika, Rahul
 // Kruskal's Algorithm
 
 #include<stdio.h>
